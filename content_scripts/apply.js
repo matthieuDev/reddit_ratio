@@ -44,7 +44,8 @@ const getTypeRedditUpdate = url => {
     }
 
     const updatePercentageList = () => {
-        const divListPost = document.querySelector('div[data-scroller-first]')?.parentNode;
+        const divListPostAll = document.querySelectorAll('div[data-scroller-first]');
+        const divListPost = divListPostAll[divListPostAll.length - 1]?.parentNode;
         const listPost = divListPost.querySelectorAll(':scope > div');
 
         if (listPost.length === nbDiv) return;
