@@ -44,6 +44,7 @@ const getTypeRedditUpdate = url => {
     }
 
     const updatePercentageList = () => {
+        // querySelectorAll for r/popular
         const divListPostAll = document.querySelectorAll('div[data-scroller-first]');
         const divListPost = divListPostAll[divListPostAll.length - 1]?.parentNode;
         const listPost = divListPost.querySelectorAll(':scope > div');
@@ -60,7 +61,9 @@ const getTypeRedditUpdate = url => {
             if (!postDiv || !!postDiv.querySelector('#ratioAddon')) {
                 continue;
             }
-            
+
+            //for multi-pictures posts
+            if (postDiv.getAttribute('role') === 'presentation') postDiv = postDiv?.firstChild?.firstChild;;
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (getTypeRedditUpdate(href.href) === 'post'){
