@@ -1,5 +1,4 @@
 
-let setPost = new Set();
 let nbDiv=0;
 let currUrl = '';
 
@@ -15,7 +14,6 @@ let currUrl = '';
     window.hasRun = true;
 
     const resetTab = () => {
-        setPost = new Set();
         nbDiv=0;
         currUrl=document.URL;
     };
@@ -28,8 +26,6 @@ let currUrl = '';
 
         if(!divVote) return;
 
-        console.log('2222222222222', curr_id);
-
         const spanDiv = document.createElement("span");
         spanDiv.style.color = "#ff4500";
         spanDiv.classList = divVote.children[1].classList;
@@ -40,8 +36,10 @@ let currUrl = '';
             .then(message => {
                 spanDiv.innerText = `${Math.round(message[0].data.children[0].data.upvote_ratio * 100)}%`;
                 divVote.insertBefore(spanDiv, divVote.children[2]);
-                console.log('444444444444444', curr_id, message[0].data.children[0].data.name, divVote);
-            });
+            })
+            .catch((error) => {
+                console.log('ERROR: ', error);
+            });;
     }
     
     const updatePercentage = () => {
@@ -61,15 +59,14 @@ let currUrl = '';
             curr_id = postDiv?.id;
 
             
-            console.log('99999999', curr_id === null , postDiv === null);
-            if (curr_id === null || setPost.has(curr_id)) continue;
-            // if (curr_id === null || postDiv === null || !!postDiv.querySelector('#ratioAddon')) continue;
+            if (!curr_id || !postDiv || !!postDiv.querySelector('#ratioAddon')) {
+                continue;
+            }
             
             setPost.add(curr_id);
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (href.href.startsWith('https://www.reddit.com/r/') && href.href.split('/')[5] === 'comments'){
-                    console.log('hrefhrefhrefhrefhref', href.href);
                     queryAddRatio(postDiv, href.href);
                     break;
                 }
@@ -79,14 +76,9 @@ let currUrl = '';
     };
 
 
-    /**
-     * Listen for messages from the background script.
-    */
-    browser.runtime.onMessage.addListener(message => {
-        if (message.command === "updatePercentage") {
-            updatePercentage();
-        } 
-    });
 
+    var intervalId = window.setInterval(function(){
+        updatePercentage();
+      }, 5000);
   
 })();

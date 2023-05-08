@@ -5,11 +5,6 @@
   "name": "RedditRatio",
   "version": "1.0",
 
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "matthieu.devaux@alumni.epfl.ch"
-    }
-  },
 
   "permissions": [
     "webRequest",
@@ -27,8 +22,5 @@
       "matches": ["https://www.reddit.com/*", "https://preview.redd.it/*"],
       "js": ["/content_scripts/apply.js"]
     }
-  ],
-  "background": {
-    "scripts": ["scripts/background.js"]
-  }
+  ]
 }
