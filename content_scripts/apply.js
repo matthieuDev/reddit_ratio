@@ -2,6 +2,13 @@
 let nbDiv=0;
 let currUrl = '';
 
+const getTypeRedditUpdate = url => {
+    if (!url) return 'none';
+    if (url.startsWith('https://www.reddit.com/r/') && url.split('/')[5] === 'comments') return 'post' ;
+    if (url === 'https://www.reddit.com/' || url.startsWith('https://www.reddit.com/r/')) return 'list';
+    return 'unknown'
+} 
+
 (() => {
     /**
      * Check and set a global guard variable.
@@ -13,16 +20,10 @@ let currUrl = '';
     }
     window.hasRun = true;
 
-    const resetTab = () => {
-        nbDiv=0;
-        currUrl=document.URL;
-    };
-
-
-    const queryAddRatio = (postDiv, href) => {
+    
+    const queryAddRatio = (postDiv, href, currId) => {
         
-        let curr_id = postDiv?.id;
-        let divVote = postDiv.querySelector(`div[id=vote-arrows-${curr_id}]`);
+        let divVote = postDiv.querySelector(`div[id=vote-arrows-${currId}]`);
 
         if(!divVote) return;
 
@@ -39,13 +40,10 @@ let currUrl = '';
             })
             .catch((error) => {
                 console.log('ERROR: ', error);
-            });;
+            });
     }
-    
-    const updatePercentage = () => {
 
-        if (currUrl !== document.URL) resetTab();
-
+    const updatePercentageList = () => {
         const divListPost = document.querySelector('div[data-scroller-first]')?.parentNode;
         const listPost = divListPost.querySelectorAll(':scope > div');
 
@@ -53,31 +51,49 @@ let currUrl = '';
         nbDiv = listPost.length;
 
         
-        let postDiv, curr_id;
+        let postDiv;
         for (let post of listPost) {
             postDiv = post?.firstChild?.firstChild;
-            curr_id = postDiv?.id;
 
             
-            if (!curr_id || !postDiv || !!postDiv.querySelector('#ratioAddon')) {
+            if (!postDiv || !!postDiv.querySelector('#ratioAddon')) {
                 continue;
             }
             
-            setPost.add(curr_id);
 
             for (let href of postDiv.querySelectorAll('a[href]')){
-                if (href.href.startsWith('https://www.reddit.com/r/') && href.href.split('/')[5] === 'comments'){
-                    queryAddRatio(postDiv, href.href);
+                if (getTypeRedditUpdate(href.href) === 'post'){
+                    queryAddRatio(postDiv, href.href, postDiv?.id);
                     break;
                 }
             } 
 
         }
+
+    }
+
+    const updatePercentagePost = () => {
+        const currId = document.URL.split('/')[6];
+        queryAddRatio (document, document.URL, `t3_${currId}`)
+    }
+
+    const changeTab = () => {
+        nbDiv=0;
+        currUrl=document.URL;
+
+        if (getTypeRedditUpdate(document.URL) === 'post') updatePercentagePost();
+    };
+
+
+    
+    const updatePercentage = () => {
+        if (currUrl !== document.URL) changeTab();
+        if (getTypeRedditUpdate(document.URL) == 'list') updatePercentageList();
     };
 
 
 
-    var intervalId = window.setInterval(function(){
+    window.setInterval(function(){
         updatePercentage();
       }, 5000);
   
