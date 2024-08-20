@@ -58,7 +58,6 @@ const getTypeRedditUpdate = url => {
             if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
                 continue;
             }
-            console.log('lol')
 
             //for multi-pictures posts
             //if (postDiv.getAttribute('role') === 'presentation') postDiv = postDiv?.firstChild?.firstChild;;
@@ -76,7 +75,9 @@ const getTypeRedditUpdate = url => {
 
     const updatePercentagePost = () => {
         const currId = document.URL.split('/')[6];
-        queryAddRatio (document, document.URL, `t3_${currId}`)
+        const redditPost = document.querySelector('shreddit-post') 
+        if (!redditPost) return
+        queryAddRatio (redditPost, document.URL, `t3_${currId}`)
     }
 
     const changeTab = () => {
