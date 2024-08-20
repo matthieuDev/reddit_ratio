@@ -2,6 +2,7 @@
 let nbDiv=0;
 let currUrl = '';
 
+// Determines the type of Reddit page based on the URL
 const getTypeRedditUpdate = url => {
     if (!url) return 'none';
     if (url.startsWith('https://www.reddit.com/r/') && url.split('/')[5] === 'comments') return 'post' ;
@@ -20,7 +21,7 @@ const getTypeRedditUpdate = url => {
     }
     window.hasRun = true;
 
-    
+    // Fetches and adds the upvote ratio percentage to a post
     const queryAddRatio = (postDiv, href) => {
         
         let divVote = postDiv.shadowRoot?.querySelector('faceplate-number');
@@ -42,16 +43,14 @@ const getTypeRedditUpdate = url => {
             });
     }
 
+    // Updates the upvote ratio percentage for posts in a list view
     const updatePercentageList = () => {
         const listPost = document.querySelectorAll('shreddit-post');
 
         if (listPost.length === nbDiv) return;
         nbDiv = listPost.length;
 
-        
-        for (let postDiv of listPost) {
-
-            
+        for (let postDiv of listPost) {            
             if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
                 continue;
             }
@@ -67,6 +66,7 @@ const getTypeRedditUpdate = url => {
 
     }
 
+    // Updates the upvote ratio percentage for a single post view
     const updatePercentagePost = () => {
         const currId = document.URL.split('/')[6];
         const redditPost = document.querySelector('shreddit-post') 
@@ -74,6 +74,7 @@ const getTypeRedditUpdate = url => {
         queryAddRatio(redditPost, document.URL)
     }
 
+    // Handles tab changes, resetting counters and updating based on new URL
     const changeTab = () => {
         nbDiv=0;
         currUrl=document.URL;
@@ -81,15 +82,13 @@ const getTypeRedditUpdate = url => {
         if (getTypeRedditUpdate(document.URL) === 'post') updatePercentagePost();
     };
 
-
-    
+    // Main function that updates the upvote ratio based on the current URL
     const updatePercentage = () => {
         if (currUrl !== document.URL) changeTab();
         if (getTypeRedditUpdate(document.URL) == 'list') updatePercentageList();
     };
 
-
-
+    // Set an interval to periodically update the upvote ratio every 5 seconds
     window.setInterval(function(){
         updatePercentage();
       }, 5000);
