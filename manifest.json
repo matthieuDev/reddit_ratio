@@ -1,26 +1,32 @@
 {
-
   "description": "Show the reddit ratio",
   "manifest_version": 2,
   "name": "RedditRatio",
   "version": "1.0",
-
-
+  "applications": {
+    "gecko": {
+      "id": "reddit-ratio@matthieuDev.com"
+    }
+  },
   "permissions": [
     "webRequest",
     "activeTab",
-    "https://www.reddit.com/*", "https://preview.redd.it/*"
+    "https://www.reddit.com/*",
+    "https://preview.redd.it/*"
   ],
-
-  "browser_action": { 
+  "browser_action": {
     "default_icon": "icons/default_icon.png",
     "default_title": "RedditRatio"
   },
-  
   "content_scripts": [
     {
-      "matches": ["https://www.reddit.com/*", "https://preview.redd.it/*"],
-      "js": ["/content_scripts/apply.js"]
+      "matches": [
+        "https://www.reddit.com/*",
+        "https://preview.redd.it/*"
+      ],
+      "js": [
+        "/content_scripts/apply.js"
+      ]
     }
   ]
 }
