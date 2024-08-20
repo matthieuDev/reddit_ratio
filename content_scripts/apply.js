@@ -43,9 +43,6 @@ const getTypeRedditUpdate = url => {
     }
 
     const updatePercentageList = () => {
-        // querySelectorAll for r/popular
-        // const divListPostAll = document.querySelectorAll('div[data-scroller-first]');
-        // const divListPost = divListPostAll[divListPostAll.length - 1]?.parentNode;
         const listPost = document.querySelectorAll('shreddit-post');
 
         if (listPost.length === nbDiv) return;
@@ -58,9 +55,6 @@ const getTypeRedditUpdate = url => {
             if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
                 continue;
             }
-
-            //for multi-pictures posts
-            //if (postDiv.getAttribute('role') === 'presentation') postDiv = postDiv?.firstChild?.firstChild;;
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (getTypeRedditUpdate(href.href) === 'post'){
