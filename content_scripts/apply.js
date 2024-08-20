@@ -23,20 +23,19 @@ const getTypeRedditUpdate = url => {
     
     const queryAddRatio = (postDiv, href, currId) => {
         
-        let divVote = postDiv.querySelector(`div[id=vote-arrows-${currId}]`);
-
+        let divVote = postDiv.shadowRoot?.querySelector('faceplate-number');
         if(!divVote) return;
 
         const spanDiv = document.createElement("span");
         spanDiv.style.color = "#ff4500";
-        spanDiv.classList = divVote.children[1].classList;
+        spanDiv.classList = divVote.classList;
         spanDiv.id = 'ratioAddon';
 
         fetch(`${href}.json`)
             .then(response => response.json())
             .then(message => {
-                spanDiv.innerText = `${Math.round(message[0].data.children[0].data.upvote_ratio * 100)}%`;
-                divVote.insertBefore(spanDiv, divVote.children[2]);
+                spanDiv.innerText = ` . ${Math.round(message[0].data.children[0].data.upvote_ratio * 100)}%`;
+                divVote.insertBefore(spanDiv, null);
             })
             .catch((error) => {
                 console.log('ERROR: ', error);
@@ -45,25 +44,24 @@ const getTypeRedditUpdate = url => {
 
     const updatePercentageList = () => {
         // querySelectorAll for r/popular
-        const divListPostAll = document.querySelectorAll('div[data-scroller-first]');
-        const divListPost = divListPostAll[divListPostAll.length - 1]?.parentNode;
-        const listPost = divListPost.querySelectorAll(':scope > div');
+        // const divListPostAll = document.querySelectorAll('div[data-scroller-first]');
+        // const divListPost = divListPostAll[divListPostAll.length - 1]?.parentNode;
+        const listPost = document.querySelectorAll('shreddit-post');
 
         if (listPost.length === nbDiv) return;
         nbDiv = listPost.length;
 
         
-        let postDiv;
-        for (let post of listPost) {
-            postDiv = post?.firstChild?.firstChild;
+        for (let postDiv of listPost) {
 
             
-            if (!postDiv || !!postDiv.querySelector('#ratioAddon')) {
+            if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
                 continue;
             }
+            console.log('lol')
 
             //for multi-pictures posts
-            if (postDiv.getAttribute('role') === 'presentation') postDiv = postDiv?.firstChild?.firstChild;;
+            //if (postDiv.getAttribute('role') === 'presentation') postDiv = postDiv?.firstChild?.firstChild;;
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (getTypeRedditUpdate(href.href) === 'post'){
