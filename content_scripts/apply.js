@@ -21,7 +21,7 @@ const getTypeRedditUpdate = url => {
     window.hasRun = true;
 
     
-    const queryAddRatio = (postDiv, href, currId) => {
+    const queryAddRatio = (postDiv, href) => {
         
         let divVote = postDiv.shadowRoot?.querySelector('faceplate-number');
         if(!divVote) return;
@@ -64,7 +64,7 @@ const getTypeRedditUpdate = url => {
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (getTypeRedditUpdate(href.href) === 'post'){
-                    queryAddRatio(postDiv, href.href, postDiv?.id);
+                    queryAddRatio(postDiv, href.href);
                     break;
                 }
             } 
@@ -77,7 +77,7 @@ const getTypeRedditUpdate = url => {
         const currId = document.URL.split('/')[6];
         const redditPost = document.querySelector('shreddit-post') 
         if (!redditPost) return
-        queryAddRatio (redditPost, document.URL, `t3_${currId}`)
+        queryAddRatio(redditPost, document.URL)
     }
 
     const changeTab = () => {
