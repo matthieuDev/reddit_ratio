@@ -41,7 +41,9 @@ const getTypeRedditUpdate = url => {
         }
         lastError = undefined;
 
-        await fetch(`${href}.json`)
+        await fetch(`${href}.json`, {
+            credentials: 'omit',
+          })
             .then(response => {
                 return response.json()
             })
