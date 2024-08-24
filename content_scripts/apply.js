@@ -1,6 +1,7 @@
 
-let nbDiv=0;
 let currUrl = '';
+let lastError = undefined;
+const ERROR_WAIT_SECONDS = 40;
 
 // Determines the type of Reddit page based on the URL
 const getTypeRedditUpdate = url => {
@@ -22,7 +23,7 @@ const getTypeRedditUpdate = url => {
     window.hasRun = true;
 
     // Fetches and adds the upvote ratio percentage to a post
-    const queryAddRatio = (postDiv, href) => {
+    const queryAddRatio = async (postDiv, href) => {
         
         let divVote = postDiv.shadowRoot?.querySelector('faceplate-number');
         if(!divVote) return;
@@ -32,32 +33,43 @@ const getTypeRedditUpdate = url => {
         spanDiv.classList = divVote.classList;
         spanDiv.id = 'ratioAddon';
 
-        fetch(`${href}.json`)
-            .then(response => response.json())
+        
+        if (lastError && (Date.now() - lastError < ERROR_WAIT_SECONDS * 1000)) {
+            spanDiv.innerText = ` . NaN`;
+            divVote.insertBefore(spanDiv, null);
+            return;
+        }
+        lastError = undefined;
+
+        await fetch(`${href}.json`)
+            .then(response => {
+                return response.json()
+            })
             .then(message => {
+                if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
+                    return;
+                }
                 spanDiv.innerText = ` . ${Math.round(message[0].data.children[0].data.upvote_ratio * 100)}%`;
                 divVote.insertBefore(spanDiv, null);
             })
             .catch((error) => {
                 console.log('ERROR: ', error);
+                lastError = Date.now();
             });
     }
 
     // Updates the upvote ratio percentage for posts in a list view
-    const updatePercentageList = () => {
+    const updatePercentageList = async () => {
         const listPost = document.querySelectorAll('shreddit-post');
 
-        if (listPost.length === nbDiv) return;
-        nbDiv = listPost.length;
-
-        for (let postDiv of listPost) {            
+        for (let postDiv of listPost) {    
             if (!postDiv || !!postDiv.shadowRoot?.querySelector('#ratioAddon')) {
                 continue;
             }
 
             for (let href of postDiv.querySelectorAll('a[href]')){
                 if (getTypeRedditUpdate(href.href) === 'post'){
-                    queryAddRatio(postDiv, href.href);
+                    await queryAddRatio(postDiv, href.href);
                     break;
                 }
             } 
@@ -68,7 +80,6 @@ const getTypeRedditUpdate = url => {
 
     // Updates the upvote ratio percentage for a single post view
     const updatePercentagePost = () => {
-        const currId = document.URL.split('/')[6];
         const redditPost = document.querySelector('shreddit-post') 
         if (!redditPost) return
         queryAddRatio(redditPost, document.URL)
@@ -76,7 +87,6 @@ const getTypeRedditUpdate = url => {
 
     // Handles tab changes, resetting counters and updating based on new URL
     const changeTab = () => {
-        nbDiv=0;
         currUrl=document.URL;
 
         if (getTypeRedditUpdate(document.URL) === 'post') updatePercentagePost();
