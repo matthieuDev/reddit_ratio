@@ -1,8 +1,8 @@
 {
   "description": "Show the reddit ratio",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "RedditRatio",
-  "version": "1.1",
+  "version": "1.2",
   "browser_specific_settings": {
     "gecko": {
       "id": "reddit-ratio@matthieuDev.com"
@@ -10,11 +10,13 @@
   },
   "permissions": [
     "webRequest",
-    "activeTab",
+    "activeTab"
+  ],
+  "host_permissions": [
     "https://www.reddit.com/*",
     "https://preview.redd.it/*"
   ],
-  "browser_action": {
+  "action": {
     "default_icon": "icons/default_icon.png",
     "default_title": "RedditRatio"
   },
